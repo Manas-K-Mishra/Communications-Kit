@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Communication Skills Assessment Game</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    max-width: 650px;
+    margin: 30px auto 60px;
+    padding: 0 15px;
+    background: #f8fafb;
+    color: #0b3d0b; /* replaced blue text color with dark blackish green */
+  }
+  #logo-container {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  #logo-container img {
+    max-height: 80px;
+    width: auto;
+  }
+  h1, h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    font-weight: 700;
+    color: #0b3d0b; /* replaced blue header color */
+  }
+  #subheader {
+    text-align: center;
+    max-width: 480px;
+    margin: 0 auto 30px;
+    font-size: 16px;
+    color: #236123; /* a natural dark green for subheader */
+  }
+  #start-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 210px;
+  }
+  #start-button {
+    background: #0b3d0b;
+    color: white;
+    border: none;
+    padding: 18px 48px;
+    font-size: 22px;
+    font-weight: bold;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  #start-button:hover {
+    background: #064806;
+  }
+  #question-container {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    padding: 25px 30px;
+    margin-bottom: 25px;
+    font-size: 18px;
+    line-height: 1.4;
+    display: none;
+    color: #0b3d0b; /* question text in dark green */
+  }
+  ul.options {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+    padding: 0;
+    display: none;
+  }
+  ul.options li {
+    background: #0b3d0b; /* dark blackish green */
+    color: white;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    font-weight: bold;
+    font-size: 22px;
+    user-select: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease;
+  }
+  ul.options li:hover {
+    background: #064806; /* darker shade on hover */
+  }
+  #progress {
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: #0b3d0b; /* replaced blue with dark green */
+    display: none;
+  }
+  #result {
+    background: #e2f0f9;
+    padding: 25px 28px;
+    border-radius: 12px;
+    border: 2px solid #0b3d0b; /* replaced blue border */
+    max-height: 600px;
+    overflow-y: auto;
+    display: none;
+    color: #0b3d0b; /* result text in dark green */
+  }
+  .category-analysis {
+    margin-bottom: 20px;
+    border-left: 6px solid #0b3d0b; /* replaced blue border */
+    background: white;
+    padding: 15px 18px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.07);
+  }
+  .category-analysis strong {
+    font-size: 16px;
+    color: #0b3d0b; /* replaced blue */
+  }
+  .category-analysis ul {
+    margin-top: 6px;
+    margin-left: 18px;
+  }
+  .category-analysis ul li {
+    margin-bottom: 6px;
+  }
+</style>
+</head>
+<body>
+
+<div id="logo-container">
+  <img src="Leven-Squad-Logo.jpg" alt="Logo" />
+</div>
+<h1>Communication Skills Self-Assessment</h1>
+<div id="subheader">
+  <strong>Rating Guide:</strong> 1 means <em>Needs Significant Improvement</em>, and 5 means <em>Excellent Skill Level</em>.  
+  Please rate honestly.
+</div>
+<!-- Start Screen -->
+<div id="start-screen">
+  <button id="start-button">Start Assessment</button>
+</div>
+<div id="progress"></div>
+<div id="question-container"></div>
+<ul class="options" id="options-list"></ul>
+<div id="result"></div>
+<script>
+  (() => {
+    const questions = [
+      "I express my thoughts clearly and confidently.",
+      "I speak at an appropriate pace and volume.",
+      "I use appropriate vocabulary for different situations.",
+      "I avoid using too many filler words (um, like, you know).",
+      "I adjust my tone and style based on my audience.",
+      "I listen actively without interrupting.",
+      "I show interest by making eye contact and nodding.",
+      "I ask relevant questions to clarify information.",
+      "I can summarize what someone has said accurately.",
+      "I avoid distractions and stay focused during conversations.",
+      "I maintain good eye contact while speaking.",
+      "My body language is open and approachable.",
+      "I use appropriate gestures to support my words.",
+      "I am aware of my facial expressions when communicating.",
+      "I respect personal space in conversations.",
+      "My emails and messages are clear and concise.",
+      "I check for spelling and grammar errors before sending.",
+      "I organize my writing in a logical manner.",
+      "I adjust my writing tone depending on the audience.",
+      "I use professional and respectful language in formal writing.",
+      "I express my opinions without hesitation.",
+      "I handle criticism constructively.",
+      "I can say \"no\" when necessary without feeling guilty.",
+      "I stay calm under pressure while communicating.",
+      "I maintain a positive attitude during conversations.",
+      "I introduce myself confidently in new situations.",
+      "I engage in small talk comfortably.",
+      "I participate actively in group discussions.",
+      "I respect cultural and social differences in communication.",
+      "I know how to exit a conversation politely.",
+      "I remain calm and respectful during disagreements.",
+      "I listen to the other person's perspective before responding.",
+      "I choose my words carefully to avoid conflict.",
+      "I use \"I\" statements instead of blaming others.",
+      "I work towards finding a solution rather than arguing."
+    ];
+    const categoryNames = [
+      "Verbal Communication",
+      "Listening Skills",
+      "Non-Verbal Communication",
+      "Written Communication",
+      "Confidence and Assertiveness",
+      "Social and Professional Interactions",
+      "Handling Difficult Conversations"
+    ];
+    const questionsPerCategory = 5;
+    const maxScorePerCategory = 5 * questionsPerCategory;
+    let currentQuestionIndex = 0;
+    const answers = [];
+    const startScreen = document.getElementById("start-screen");
+    const startButton = document.getElementById("start-button");
+    const questionContainer = document.getElementById("question-container");
+    const optionsList = document.getElementById("options-list");
+    const progressDiv = document.getElementById("progress");
+    const resultDiv = document.getElementById("result");
+    const subheader = document.getElementById("subheader");
+    function updateProgress() {
+      progressDiv.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+    }
+    function showQuestion(index) {
+      updateProgress();
+      questionContainer.textContent = questions[index];
+      optionsList.innerHTML = "";
+      for(let i=1; i<=5; i++){
+        const li = document.createElement("li");
+        li.textContent = i.toString();
+        li.tabIndex = 0;
+        li.addEventListener("click", () => recordAnswer(i));
+        li.addEventListener("keypress", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            recordAnswer(i);
+          }
+        });
+        optionsList.appendChild(li);
+      }
+    }
+    function recordAnswer(value) {
+      answers[currentQuestionIndex] = value;
+      currentQuestionIndex++;
+      if(currentQuestionIndex < questions.length){
+        showQuestion(currentQuestionIndex);
+      } else {
+        showResults();
+      }
+    }
+    function showResults() {
+      questionContainer.style.display = "none";
+      optionsList.style.display = "none";
+      progressDiv.style.display = "none";
+      subheader.style.display = "none";
+      startScreen.style.display = "none";
+      const categoryScores = new Array(categoryNames.length).fill(0);
+      for(let i=0; i < answers.length; i++){
+        let catIndex = Math.floor(i / questionsPerCategory);
+        categoryScores[catIndex] += answers[i];
+      }
+      const totalScore = categoryScores.reduce((a,b) => a+b, 0);
+      const totalMax = maxScorePerCategory * categoryNames.length;
+      const overallPercent = (totalScore / totalMax) * 100;
+      function categoryAnalysis(score, category) {
+        const percent = (score / maxScorePerCategory) * 100;
+        let diagnosis = "", impact = "", actions = [], milestone = "";
+        switch(category){
+          case "Verbal Communication":
+            if(percent >= 85){
+              diagnosis = "You articulate ideas clearly and adapt tone well.";
+              impact = "Essential for leadership and influence.";
+              actions = ["Record yourself presenting to improve nuance."];
+              milestone = "Deliver one confident talk this month.";
+            } else if(percent >= 65){
+              diagnosis = "Good verbal foundation; improve filler words.";
+              impact = "Reduction in misunderstandings.";
+              actions = ["Pause before speaking to reduce fillers."];
+              milestone = "Track filler words in 5 conversations.";
+            } else if(percent >= 40){
+              diagnosis = "Clarity and pacing need improvement.";
+              impact = "Risk of confusion.";
+              actions = ["Practice reading aloud and recording."];
+              milestone = "Assess speech clarity 3 times/week.";
+            } else {
+              diagnosis = "Foundational verbal skills need work.";
+              impact = "Limits influence and clarity.";
+              actions = ["Join beginner speaking groups."];
+              milestone = "Speak confidently in small groups monthly.";
+            }
+            break;
+          case "Listening Skills":
+            if(percent >= 85){
+              diagnosis = "Strong active listening skills.";
+              impact = "Builds strong trust and teamwork.";
+              actions = ["Paraphrase key points in conversations."];
+              milestone = "Summarize 3 conversations weekly.";
+            } else if(percent >= 65){
+              diagnosis = "Good listener; enhance focus and questioning.";
+              impact = "Avoids miscommunication.";
+              actions = ["Ask clarifying questions every meeting."];
+              milestone = "Use reflective listening in 5 discussions.";
+            } else if(percent >= 40){
+              diagnosis = "Sometimes distracted during conversations.";
+              impact = "Can cause errors.";
+              actions = ["Avoid multitasking; focus fully."];
+              milestone = "Complete daily listening logs for a week.";
+            } else {
+              diagnosis = "Listening skills need foundational development.";
+              impact = "High risk of miscommunication.";
+              actions = ["Practice structured focus exercises."];
+              milestone = "Show progress in listening after 4 weeks.";
+            }
+            break;
+          case "Non-Verbal Communication":
+            if(percent >= 85){
+              diagnosis = "Non-verbal cues strongly support your message.";
+              impact = "Improves clarity and trust.";
+              actions = ["Record and refine body language."];
+              milestone = "Maintain consistent eye contact.";
+            } else if(percent >= 65){
+              diagnosis = "Good non-verbal cues; refine small habits.";
+              impact = "Enhances overall communication impact.";
+              actions = ["Mirror positive body language."];
+              milestone = "Identify and fix 2 distracting habits.";
+            } else if(percent >= 40){
+              diagnosis = "Mixed signals can cause confusion.";
+              impact = "Undermines message strength.";
+              actions = ["Learn proxemics and gestures basics."];
+              milestone = "Apply 3 positive non-verbal techniques.";
+            } else {
+              diagnosis = "Non-verbal awareness needs urgent focus.";
+              impact = "Severely limits communication.";
+              actions = ["Use mirror practice and training videos."];
+              milestone = "Show open and confident posture regularly.";
+            }
+            break;
+          case "Written Communication":
+            if(percent >= 85){
+              diagnosis = "Clear, professional, and audience-aware writing.";
+              impact = "Builds credibility and trust.";
+              actions = ["Mentor others on writing best practices."];
+              milestone = "Write error-free professional emails weekly.";
+            } else if(percent >= 65){
+              diagnosis = "Good writing but proofreading needed.";
+              impact = "Avoid minor reputation risks.";
+              actions = ["Use grammar tools and outlines."];
+              milestone = "Reduce writing errors consistently.";
+            } else if(percent >= 40){
+              diagnosis = "Unclear and error-prone writing.";
+              impact = "Delays feedback and action.";
+              actions = ["Take basic business writing courses."];
+              milestone = "Use checklist before sending emails.";
+            } else {
+              diagnosis = "Foundational writing skills require work.";
+              impact = "Blocks career progression.";
+              actions = ["Daily writing and grammar practice."];
+              milestone = "Craft well-structured messages consistently.";
+            }
+            break;
+          case "Confidence and Assertiveness":
+            if(percent >= 85){
+              diagnosis = "Clear, calm, and confident communicator.";
+              impact = "Leads and influences well.";
+              actions = ["Practice negotiation techniques."];
+              milestone = "Lead discussions regularly.";
+            } else if(percent >= 65){
+              diagnosis = "Confident but occasional hesitation.";
+              impact = "Stronger assertiveness needed.";
+              actions = ["Use scripted assertiveness statements."];
+              milestone = "Assert opinions in 3 settings.";
+            } else if(percent >= 40){
+              diagnosis = "Hesitant and uncomfortable expressing views.";
+              impact = "Risk of burnout and missed opportunities.";
+              actions = ["Attend assertiveness workshops."];
+              milestone = "Report improved confidence soon.";
+            } else {
+              diagnosis = "Foundational rebuilding of assertiveness needed.";
+              impact = "Limits visibility and opportunities.";
+              actions = ["Daily affirmations and coaching."];
+              milestone = "Practice basic assertive communication.";
+            }
+            break;
+          case "Social and Professional Interactions":
+            if(percent >= 85){
+              diagnosis = "Comfortable and effective in social contexts.";
+              impact = "Builds strong networks.";
+              actions = ["Expand cultural competence."];
+              milestone = "Initiate 5 new meaningful connections monthly.";
+            } else if(percent >= 65){
+              diagnosis = "Good, but more social confidence needed.";
+              impact = "Can grow influence.";
+              actions = ["Practice conversation starters."];
+              milestone = "Engage in 3 new group discussions.";
+            } else if(percent >= 40){
+              diagnosis = "Social awkwardness limits growth.";
+              impact = "Reduces collaboration.";
+              actions = ["Join social skills workshops."];
+              milestone = "Introduce self to 3 new people.";
+            } else {
+              diagnosis = "Major social skill gaps.";
+              impact = "Blocks career/team progress.";
+              actions = ["Professional coaching and role-play."];
+              milestone = "Learn basic networking in 30 days.";
+            }
+            break;
+          case "Handling Difficult Conversations":
+            if(percent >= 85){
+              diagnosis = "Calm, respectful, and solution-focused.";
+              impact = "Preserves relationships and solutions.";
+              actions = ["Coach peers in conflict resolution."];
+              milestone = "Lead one tough conversation monthly.";
+            } else if(percent >= 65){
+              diagnosis = "Manages tough talks reasonably well.";
+              impact = "Can reduce stress.";
+              actions = ["Prepare scripts for conflict."];
+              milestone = "Improve confidence in 2 conflicts.";
+            } else if(percent >= 40){
+              diagnosis = "Avoids or struggles with conflict.";
+              impact = "Unresolved issues persist.";
+              actions = ["Role-play conflict scenarios."];
+              milestone = "Engage in guided difficult conversations.";
+            } else {
+              diagnosis = "Urgent improvement needed in conflict skills.";
+              impact = "Reputation and relationships at risk.";
+              actions = ["Conflict resolution training."];
+              milestone = "Show steady progress after training.";
+            }
+            break;
+        }
+        return `
+          <div class="category-analysis">
+            <strong>${category}:</strong> ${score} / ${maxScorePerCategory} (${percent.toFixed(0)}%)<br/>
+            <em>Diagnosis:</em> ${diagnosis}<br/>
+            <em>Impact:</em> ${impact}<br/>
+            <em>Recommended actions:</em>
+            <ul>${actions.map(a => `<li>${a}</li>`).join("")}</ul>
+            <em>Milestone:</em> ${milestone}
+          </div>
+        `;
+      }
+      let overallFeedback = "";
+      if(overallPercent >= 85){
+        overallFeedback = `
+          <p>Your communication skills are excellent. Keep refining with advanced practices like leadership and emotional intelligence.</p>
+        `;
+      } else if(overallPercent >= 70){
+        overallFeedback = `
+          <p>You have a strong foundation but targeted practice will improve key areas further.</p>
+          <p><strong>Next Step:</strong> Focus on weakest 1-2 categories with daily practice.</p>
+        `;
+      } else if(overallPercent >= 50){
+        overallFeedback = `
+          <p>Your skills are developing; a structured plan focusing on fundamentals will fast-track improvement.</p>
+          <p><strong>Next Step:</strong> Prioritize foundational skills and set weekly goals.</p>
+        `;
+      } else {
+        overallFeedback = `
+          <p>You need foundational improvement for career and social success.</p>
+          <p><strong>Next Step:</strong> Commit to daily beginner exercises and coaching.</p>
+        `;
+      }
+      let categoriesHtml = "";
+      for(let i=0; i<categoryNames.length; i++){
+        categoriesHtml += categoryAnalysis(categoryScores[i], categoryNames[i]);
+      }
+      resultDiv.style.display = "block";
+      resultDiv.innerHTML = `
+        <h2>Your Detailed Assessment Results</h2>
+        <p><strong>Total Score:</strong> ${totalScore} / ${totalMax} (${overallPercent.toFixed(1)}%)</p>
+        ${overallFeedback}
+        <h3>Category-wise Analysis and Action Plan</h3>
+        ${categoriesHtml}
+        <p style="text-align:center; font-weight:bold; margin-top: 30px;">
+          Reassess after 4 weeks of focused practice for measurable progress.
+        </p>
+      `;
+    }
+    function startQuiz() {
+      startScreen.style.display = "none";
+      questionContainer.style.display = "block";
+      optionsList.style.display = "flex";
+      progressDiv.style.display = "block";
+      showQuestion(currentQuestionIndex);
+    }
+    startButton.addEventListener("click", startQuiz);
+  })();
+</script>
+</body>
+</html>
